@@ -1,0 +1,16 @@
+{
+  "hi": {
+    "hi": "hi"
+  },
+  "port": 8089,
+  "mongo": {
+    "uri": "mongodb://localhost:27017/?connect=direct",
+    "db": "seed",
+    "username": "seed",
+    "password": "seed.go"
+  },
+  "token": {
+    "secret": "secret",
+    "exp": "1h"
+  }
+}
