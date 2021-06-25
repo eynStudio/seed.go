@@ -9,14 +9,14 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func createToken(user string, email string) (string, error) {
+func CreateToken(id string, username string) (string, error) {
 	exp, err := time.ParseDuration(viper.GetString("token.exp"))
 	if err != nil {
 		return "", err
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": user,
-		"email":    email,
+		"username": username,
+		"id":       id,
 		"iat":      time.Now().Unix(),
 		"exp":      time.Now().Add(exp).Unix(),
 	})
@@ -27,7 +27,7 @@ func createToken(user string, email string) (string, error) {
 	return s, nil
 }
 
-func verifyToken(tokenString string) (jwt.MapClaims, error) {
+func VerifyToken(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return false, fmt.Errorf("There was an error")

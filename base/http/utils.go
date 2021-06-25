@@ -11,7 +11,7 @@ func CheckToken(h http.Handler) http.Handler {
 		ctx = context.WithValue(r.Context(), "username", "") // default empty
 		auth := r.Header.Get("authorization")
 		if auth != "" {
-			token, _ := verifyToken(auth)
+			token, _ := VerifyToken(auth)
 			if token != nil {
 				ctx = context.WithValue(r.Context(), "username", token["username"])
 			}
