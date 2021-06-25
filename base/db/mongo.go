@@ -13,7 +13,9 @@ type Mongo struct {
 	session *mongo.Client
 }
 
-func OpenMongo() Mongo {
+var DefaultMongo = &Mongo{}
+
+func OpenMongo() *Mongo {
 	host := viper.GetString("mongo.uri")
 	db := viper.GetString("mongo.db")
 	username := viper.GetString("mongo.username")
@@ -35,9 +37,8 @@ func OpenMongo() Mongo {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return Mongo{
-		session: client,
-	}
+	DefaultMongo.session = client
+	return DefaultMongo
 }
 
 func (db Mongo) Close() {
@@ -45,4 +46,10 @@ func (db Mongo) Close() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (db Mongo) Collection(collection string) *mongo.Collection {
+	database := viper.GetString("mongo.db")
+
+	return DefaultMongo.session.Database(database).Collection(collection)
 }
