@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,23 +8,13 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/eynstudio/seed.go/base/db"
+	"github.com/eynstudio/seed.go/base/utils"
 	"github.com/eynstudio/seed.go/schema"
-	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/handler"
 )
 
 func init() {
 
-}
-
-func executeQuery(query string, schema graphql.Schema) *graphql.Result {
-	result := graphql.Do(graphql.Params{
-		Schema:        schema,
-		RequestString: query,
-	})
-	if len(result.Errors) > 0 {
-		fmt.Printf("wrong result, unexpected errors: %v", result.Errors)
-	}
-	return result
 }
 
 func main() {
@@ -36,10 +25,12 @@ func main() {
 	mongo := db.OpenMongo()
 	defer mongo.Close()
 
-	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
-		result := executeQuery(r.URL.Query().Get("query"), schema.RootSchema)
-		json.NewEncoder(w).Encode(result)
+	h := handler.New(&handler.Config{
+		Schema:   &schema.RootSchema,
+		Pretty:   true,
+		GraphiQL: true,
 	})
+	http.Handle("/graphql", utils.Cors(h))
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/", fs)
